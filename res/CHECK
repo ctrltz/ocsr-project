@@ -1,0 +1,19 @@
+After running 'test.sh' in project's directory structure of 'res' folder must look like this:
+
+  | res
+  ---> test
+     ---> 126854
+        --- 126854.final.debug
+        --- 126854.final.smi
+        --- 126854.init.debug
+        --- 126854.png
+        --- 126854.smi
+     ---> 126854-gray
+        --- 126854-gray.final.debug
+        --- 126854-gray.final.smi
+        --- 126854-gray.init.debug
+        --- 126854-gray.png
+        --- 126854-gray.smi
+  ---  CHECK
+
+126854.smi must contain two structures (two lines), while 126854-gray.smi contains only one line.

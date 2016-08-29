@@ -1,0 +1,45 @@
+dbQOSR - a tool that provides an opportunity to perform quality-aware Optical Chemical Structure Recognition for large image databases.
+
+This project was developed with:
+  - Ubuntu
+  - Python 2.7.6
+  - OSRA (both 1.4.0 and 2.0.1 are supported)
+No tests for other versions of required projects were held.
+
+Usage: 
+
+python core.py [-h] -i I [-f {png,jpg,mol,smi}] [-o O] [-d] [-v {1.4.0,2.0.1}]
+               [-a {cmp,corr}] [-r] [-s]
+
+example: python core.py -i ./data/anti -o 
+
+This script allows to use OSRA for processing big datasets and evaluate
+quality of the result.
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+I/O Options:
+  -i I                  path to the database directory 
+  -f {png,jpg,mol,smi}  input file format (defaults: corr - png, cmp - mol)
+  -o O                  name of the result (is used to create a directory in
+                        'res' folder, default - database folder name)
+
+Setting parameters:
+  -d                    debug mode (detailed output)
+  -v {1.4.0,2.0.1}      OSRA version
+  -a {cmp,corr}         Choose an action to perform
+  -r                    Restore initial version of 'spelling.txt' file after
+                        experiments
+  -s                    Turn on auto-corrections
+
+Results:
+
+Path to the folder with results: <project folder>/res/name, where name is specified
+with '-o'  argument, or is a name of folder with your database.
+
+Format of the result is not specified yet. Current format:
+
+  - for each image there is a corresponding folder with .smi file (there may be 
+    some extra debug files)
+  - a report containing information about the quality of the result (in progress)
