@@ -2,10 +2,11 @@ import config
 import quality
 import subprocess
 import utils
-from os import path, mkdir, chdir
 
+from os import path, mkdir, chdir, remove
+from shutil import move
 
-def remove(string, pos):
+def rm(string, pos):
     return string[:pos] + string[(pos+1):]
 
 
@@ -19,7 +20,7 @@ def remove_hydrogens(mol):  # removes all H with their counters from string
     while i < len(mol):
         # print 'String: {0}. Ch: {1}. Action: {2}'.format(mol, i+1, mol[i] == 'H' or flag and mol[i].isdigit())
         if mol[i] == 'H' or flag and mol[i].isdigit():
-            mol = remove(mol, i)
+            mol = rm(mol, i)
             flag = 1
         else:
             mol = toupper(mol, i)
@@ -29,21 +30,20 @@ def remove_hydrogens(mol):  # removes all H with their counters from string
     return mol
 
 
-def correct(fin, folder):
-    base = path.join(folder, path.splitext(path.basename(fin))[0])
-    init = base + ".smi"
+def correct(fin):
+    image_name = path.splitext(path.basename(fin))[0]
+    base = path.join(config.tmpDir, image_name)
     src = base + ".png"
 
-    if config.debug:
-        utils.log('\nSource file: {}', src)
-        utils.log('Output: {}', init)
+    utils.log('\nSource file: {}', src)
 
+    '''
     if not config.auto:
         initdebug = base + ".init.debug"
         initdfile = open(initdebug, "w")
         subprocess.call([config.osra_path, "-l", config.spelling, "-d", "-f", "smi", "-w", init, src],
                         stdout=initdfile)
-        '''
+
         initdfile.close()
         initdfile = open(initdebug, "r")
 
@@ -75,7 +75,6 @@ def correct(fin, folder):
                 spell.write("%s %s\n" % (el, changeList[el]))
 
         spell.close()
-        '''
 
         final = base + ".final.smi"
         finaldebug = base + ".final.debug"
@@ -89,6 +88,33 @@ def correct(fin, folder):
         initdfile.close()
         finaldfile.close()
     else:
-        subprocess.call([config.osra_path, "-f", "smi", "-w", init, src])
+    '''
 
-    config.qualityList[fin] = quality.estimate(base)
+    chdir(config.tmpDir)
+    template = 'struct-'
+    print config.osra_path + ' -b -f smi -p -o ' + template + ' ' + fin
+    osra = subprocess.Popen([config.osra_path, '-b', '-f', 'smi', '-p', '-o', template, fin],
+                            stdout = subprocess.PIPE)
+
+    counter = 0
+    for line in osra.stdout:
+        image_path = template + str(counter) + '.png'
+
+        if config.jar_path != '':
+            jar_path = 'java -jar ' + config.jar_path + ' ' + image_path
+            print jar_path
+
+            jar = subprocess.Popen(['java', '-jar', config.jar_path, image_path],
+                                   stdout=subprocess.PIPE)
+
+            with open(config.report_file, "a") as fout:
+                fout.write(line[:-1] + '\t' + jar.stdout.readline() + '\n')
+                # fout.write(line)
+
+        inPath = path.normpath(path.join(config.inDir, image_name + '.' + image_path))
+        move(image_path, inPath)
+        counter += 1
+
+    # config.qualityList[fin] = quality.estimate(base)
+    remove(src)
+    chdir(config.dbDir)
