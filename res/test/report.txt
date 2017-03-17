@@ -1,3 +1,3 @@
-c1c2[nH]cc(CC(C(=O)N[C@H](/C(=[O]/OC(=O)CCCCNC(=N)N)/N)CCCCN)NC(=O)[C@@H](N)CC(=O)O)c2ccc1 28.8976 9.87113	12	12	14
-C(NC(=N)N)CC 28.5539 7.58767	12	12	14
-c1c2[nH]cc(CC(C(=O)N[C@H](/C(=[O]/OC=O)/N)CCCCN)NC(=O)[C@@H](N)CC(=O)O)c2ccc1 28.5539 9.70621	12	12	14
+126854-gray.struct-0.png	c1c2[nH]cc(CC(C(=O)N[C@H](/C(=[O]/OC(=O)CCCCNC(=N)N)/N)CCCCN)NC(=O)[C@@H](N)CC(=O)O)c2ccc1	28.8976	9.87113	0	0	0	0	12	12	14
+126854.struct-0.png	C(NC(=N)N)CC	28.5539	7.58767	0	0	0	0	12	12	14
+126854.struct-1.png	c1c2[nH]cc(CC(C(=O)N[C@H](/C(=[O]/OC=O)/N)CCCCN)NC(=O)[C@@H](N)CC(=O)O)c2ccc1	28.5539	9.70621	0	0	0	0	12	12	14

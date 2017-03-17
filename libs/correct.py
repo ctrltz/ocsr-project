@@ -94,11 +94,15 @@ def correct(fin):
     template = 'struct-'
     print config.osra_path + ' -b -f smi -p -o ' + template + ' ' + fin
     osra = subprocess.Popen([config.osra_path, '-b', '-f', 'smi', '-p', '-o', template, fin],
-                            stdout = subprocess.PIPE)
+                            stdout=subprocess.PIPE)
 
     counter = 0
     for line in osra.stdout:
         image_path = template + str(counter) + '.png'
+
+        osra_metrics = line[:-1].split(' ')     # 0 - smile, 1 - bond length, 2 - confidence estimate
+        with open('current.smi', 'w') as smi_file:
+            smi_file.write(osra_metrics[0])
 
         if config.jar_path != '':
             jar_path = 'java -jar ' + config.jar_path + ' ' + image_path
@@ -106,15 +110,25 @@ def correct(fin):
 
             jar = subprocess.Popen(['java', '-jar', config.jar_path, image_path],
                                    stdout=subprocess.PIPE)
+            jar_metrics = jar.stdout.readline()
+        else:
+            jar_metrics = None
 
-            with open(config.report_file, "a") as fout:
-                fout.write(line[:-1] + '\t' + jar.stdout.readline() + '\n')
-                # fout.write(line)
+        final_name = image_name + '.' + image_path
+        in_path = path.normpath(path.join(config.inDir, final_name))
+        move(image_path, in_path)
 
-        inPath = path.normpath(path.join(config.inDir, image_name + '.' + image_path))
-        move(image_path, inPath)
+        subprocess.call(['obabel', 'current.smi', '-O', final_name], stdout=subprocess.PIPE)
+        out_path = path.normpath(path.join(config.outDir, final_name))
+        move(final_name, out_path)
         counter += 1
 
-    # config.qualityList[fin] = quality.estimate(base)
+        osra_metrics.extend(quality.estimate())
+
+        with open(config.report_file, "a+") as fout:
+            fout.write(image_name + '.' + image_path + '\t' + '\t'.join(str(el) for el in osra_metrics) + '\t' + jar_metrics + '\n')
+
+    remove('current.smi')
+    remove('current.mol')
     remove(src)
     chdir(config.dbDir)
